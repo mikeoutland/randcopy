@@ -50,11 +50,13 @@ def randomCopy(srcPathList, dstPath, fileCount):
 	sys.stdout.flush()
 
 def calcEtaStr(startTime, position, total):
-	elapsedTime = datetime.datetime.now() - startTime
-	estimatedRemaining = elapsedTime * total / (position+1)
-	estimatedEndTime = datetime.datetime.now() + estimatedRemaining
-	estimatedTimeToComplete = estimatedEndTime - datetime.datetime.now()
-	return estimatedTimeToComplete.__str__()
+	if position == 0:
+		return "???"
+	else:
+		elapsedTime = datetime.datetime.now() - startTime
+		estimatedRemaining = elapsedTime * total / position
+		estimatedTimeToComplete = estimatedRemaining - elapsedTime
+		return estimatedTimeToComplete.__str__()
 
 def checkFFmpeg():
 	try:
