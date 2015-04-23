@@ -29,6 +29,9 @@ def copyOrConvert(srcPath, dstPath):
 			shutil.copy2(srcPath, dstPath)
 		else:
 			subprocess.call(["ffmpeg", "-loglevel", "panic", "-nostats", "-y", "-i", srcPath, "-ab",  "320k",  "-map_metadata",  "0",  "-id3v2_version", "3", (dstPath + "/" + fileName + ".mp3")])
+	except KeyboardInterrupt:
+		print("\nExiting...")
+		sys.exit(1)
 	except:
 		print("Exception, moving along..")
 
