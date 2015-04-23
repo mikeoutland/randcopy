@@ -95,9 +95,9 @@ def main(argv):
 	print("Destination: " + str(filesDestinationPath))
 	print("Number of files to copy: " + str(howManyFilesToCopy))
 
-	print("Building src file list...")
+	print("Building source file list...")
 	filesSourcePathList = populateFileList(filesSourcePath, supportedExtensions)
-	print("Src file list complete; number of files = " + str(len(filesSourcePathList)))
+	print("Source file list complete; number of files collected = " + str(len(filesSourcePathList)))
 	randomCopy(filesSourcePathList, filesDestinationPath, howManyFilesToCopy)
 	print("\nCopy complete")
 
