@@ -1,7 +1,7 @@
 RANDCOPY
 ========
 
-Randcopy was created by Mike Outland at https://github.com/mikeoutland-nexusis/randcopy
+Randcopy was created by Mike Outland at https://github.com/mikeoutland/randcopy
 
 Randcopy is a utility to randomly copy music from a large local datastore to another local datastore.
 A typical use case might be to generate a random collection of music on a USB thumb drive.
