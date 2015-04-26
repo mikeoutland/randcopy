@@ -59,15 +59,12 @@ def copyOrConvert(srcPath, dstPath):
 def randomCopy(srcPathList, dstPath, fileCount):
 	startTime = datetime.datetime.now()
 	for x in range(0, fileCount):
-		percent = float(x) / fileCount
-		hashes = '#' * int(round(percent * 20))
-		spaces = ' ' * (20 - len(hashes))
-		randIndex = randint(0, len(srcPathList)-1)
-		sys.stdout.write("\rProgress: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))) + " ETA: " + calcEtaStr(startTime, x, fileCount))
+		sys.stdout.write("\rProgress: " + calcProgressBarStr(20, x, fileCount) + " ETA: " + calcEtaStr(startTime, x, fileCount))
 		sys.stdout.flush()
+		randIndex = randint(0, len(srcPathList)-1)
 		copyOrConvert(srcPathList.pop(randIndex), dstPath)
 
-	sys.stdout.write("\rProgress: [{0}] {1}%".format(hashes + spaces, 100) + " ETA: " + calcEtaStr(startTime, x, fileCount))
+	sys.stdout.write("\rProgress: " + calcProgressBarStr(20, x, fileCount) + " ETA: " + calcEtaStr(startTime, x, fileCount))
 	sys.stdout.flush()
 
 # Function calcEtaStr takes a start time, position
@@ -89,6 +86,23 @@ def calcEtaStr(startTime, position, total):
 		estimatedRemaining = elapsedTime * total / position
 		estimatedTimeToComplete = estimatedRemaining - elapsedTime
 		return estimatedTimeToComplete.__str__()
+
+# Function calcProgressBarStr takes a bar size, position
+# in the list and the list size to determine 
+# a progress bar completion and percentage as a String.
+#
+# @param Int barSize - The size in hashmarks for the progress bar
+# @param Int position - The position in the array being 
+#   consumed
+# @param Int total - The total size of the array being
+#   consumed
+# @returns - A String as a progress bar of hash marks and percentage to 
+#	completion.  eg: "[##    ] 33%"
+def calcProgressBarStr(barSize, position, total):
+	percent = float(position) / total
+	hashes = '#' * int(round(percent * barSize))
+	spaces = ' ' * (barSize - len(hashes))
+	return "[{0}] {1}%".format(hashes + spaces, int(round(percent * 100)))
 
 # Function checkFFmpeg checks for the existance of the
 # ffmpeg binary by calling it with the help flag.  The
