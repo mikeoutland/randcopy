@@ -33,14 +33,20 @@ def populateFileList(srcPath, extensions):
 #
 # @param FilePath srcPath - Source path and file
 # @param FilePath dstPath - Destination path
-def copyOrConvert(srcPath, dstPath):
+def copyOrConvert(srcPath, dstPath, theIndex=-1):
 	filePath, fileExtension = os.path.splitext(srcPath)
 	fileName = os.path.basename(filePath)
+
+	if theIndex > 0:
+		dstPath = dstPath + "/" + str(theIndex).zfill(6) + " - " + fileName + ".mp3"
+	else:
+		dstPath = dstPath + "/" + fileName + ".mp3"
+
 	try:
 		if fileExtension == '.mp3':
 			shutil.copy2(srcPath, dstPath)
 		else:
-			subprocess.call(["ffmpeg", "-loglevel", "panic", "-nostats", "-y", "-i", srcPath, "-ab",  "320k",  "-map_metadata",  "0",  "-id3v2_version", "3", (dstPath + "/" + fileName + ".mp3")])
+			subprocess.call(["ffmpeg", "-loglevel", "panic", "-nostats", "-y", "-i", srcPath, "-ab",  "320k",  "-map_metadata",  "0",  "-id3v2_version", "3", (dstPath)])
 	except KeyboardInterrupt:
 		print("\nExiting...")
 		sys.exit(1)
@@ -56,13 +62,13 @@ def copyOrConvert(srcPath, dstPath):
 # @param FilePath dstPath - Destination path
 # @param Int fileCount - How many files to copy
 #   / convert
-def randomCopy(srcPathList, dstPath, fileCount):
+def randomCopy(srcPathList, dstPath, fileCount, doWeIndex):
 	startTime = datetime.datetime.now()
 	for x in range(0, fileCount):
 		sys.stdout.write("\rProgress: " + calcProgressBarStr(20, x, fileCount) + " ETA: " + calcEtaStr(startTime, x, fileCount))
 		sys.stdout.flush()
 		randIndex = randint(0, len(srcPathList)-1)
-		copyOrConvert(srcPathList.pop(randIndex), dstPath)
+		copyOrConvert(srcPathList.pop(randIndex), dstPath, ((x+1) if doWeIndex == True else -1))
 
 	sys.stdout.write("\rProgress: " + calcProgressBarStr(20, x, fileCount) + " ETA: " + calcEtaStr(startTime, x, fileCount))
 	sys.stdout.flush()
@@ -128,22 +134,32 @@ def printHelp():
 # Function printUsage prints the command usage to the
 #   terminal.
 def printUsage():
-	print("Usage: randcopy.py [-h] srcDir dstDir numFiles")
+	print("Usage: randcopy.py [-h] [-i] srcDir dstDir numFiles")
+	print("	-h : Help and usage")
+	print("	-i : Index destination files to preserve random order")
 
 # Function main takes command line arguments for performing
 # the random copy.
 def main(argv):
+	indexFiles = False
 	if len(argv) != 4:
 		if len(argv) == 2 and argv[1] == '-h':
 			printHelp()
 			sys.exit(0)
+		elif len(argv) == 5 and argv[1] == '-i':
+			indexFiles = True
 		else:
 			printUsage()
 			sys.exit(1)
 	checkFFmpeg()
-	filesSourcePath = argv[1]
-	filesDestinationPath = argv[2]
-	howManyFilesToCopy = int(argv[3])
+	if indexFiles == True:
+		filesSourcePath = argv[2]
+		filesDestinationPath = argv[3]
+		howManyFilesToCopy = int(argv[4])
+	else:
+		filesSourcePath = argv[1]
+		filesDestinationPath = argv[2]
+		howManyFilesToCopy = int(argv[3])
 
 	print("Source: " + str(filesSourcePath))
 	print("Destination: " + str(filesDestinationPath))
@@ -152,7 +168,7 @@ def main(argv):
 	print("Building source file list...")
 	filesSourcePathList = populateFileList(filesSourcePath, supportedExtensions)
 	print("Source file list complete; number of files collected = " + str(len(filesSourcePathList)))
-	randomCopy(filesSourcePathList, filesDestinationPath, howManyFilesToCopy)
+	randomCopy(filesSourcePathList, filesDestinationPath, howManyFilesToCopy, indexFiles)
 	print("\nCopy complete")
 
 # Calls function main()
