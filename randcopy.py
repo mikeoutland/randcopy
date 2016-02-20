@@ -33,12 +33,12 @@ def populateFileList(srcPath, extensions):
 #
 # @param FilePath srcPath - Source path and file
 # @param FilePath dstPath - Destination path
-def copyOrConvert(srcPath, dstPath, theIndex=-1):
+def copyOrConvert(srcPath, dstPath, indexLen, theIndex=-1):
 	filePath, fileExtension = os.path.splitext(srcPath)
 	fileName = os.path.basename(filePath)
 
 	if theIndex > 0:
-		dstPath = dstPath + "/" + str(theIndex).zfill(6) + " - " + fileName + ".mp3"
+		dstPath = dstPath + "/" + str(theIndex).zfill(indexLen) + " - " + fileName + ".mp3"
 	else:
 		dstPath = dstPath + "/" + fileName + ".mp3"
 
@@ -64,11 +64,12 @@ def copyOrConvert(srcPath, dstPath, theIndex=-1):
 #   / convert
 def randomCopy(srcPathList, dstPath, fileCount, doWeIndex):
 	startTime = datetime.datetime.now()
+	indexLen = len(str(abs(fileCount)))
 	for x in range(0, fileCount):
 		sys.stdout.write("\rProgress: " + calcProgressBarStr(20, x, fileCount) + " ETA: " + calcEtaStr(startTime, x, fileCount))
 		sys.stdout.flush()
 		randIndex = randint(0, len(srcPathList)-1)
-		copyOrConvert(srcPathList.pop(randIndex), dstPath, ((x+1) if doWeIndex == True else -1))
+		copyOrConvert(srcPathList.pop(randIndex), dstPath, indexLen, ((x+1) if doWeIndex == True else -1))
 
 	sys.stdout.write("\rProgress: " + calcProgressBarStr(20, x, fileCount) + " ETA: " + calcEtaStr(startTime, x, fileCount))
 	sys.stdout.flush()
